@@ -10,6 +10,10 @@ export default defineNuxtConfig({
   build: {
     transpile: [ "vuetify" ],
   },
+  generate: {
+    // Generate Equipment Detail pages for a few equipment we know.
+    routes: [ "/equipment/72943", "/equipment/73146", "/equipment/83885", "/equipment/84556" ],
+  },
   app: {
     head: {
       charset: "utf-8",
