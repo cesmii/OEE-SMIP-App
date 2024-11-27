@@ -1,3 +1,4 @@
+import { ApolloClient, InMemoryCache } from "@apollo/client/core/index.js";
 import { jwtDecode } from "jwt-decode";
 import { z } from "zod";
 
@@ -13,6 +14,7 @@ export type OnLoginFn = (token: string | undefined) => Promise<void>;
 
 
 export interface AuthenticatorLoginInput {
+  endpoint: string;
   authenticator: string;
   role: string;
   username: string;
@@ -27,7 +29,12 @@ export interface AuthenticatorLoginInput {
 export async function loginWithAuthenticator(
   data: AuthenticatorLoginInput,
 ): Promise<void> {
-  const { client } = useApolloClient("noauth");
+  const client = new ApolloClient({
+    uri: data.endpoint,
+    cache: new InMemoryCache(),
+  });
+
+  // define onLogin as a reference to the useApollo composable https://apollo.nuxtjs.org/getting-started/composables
   const { onLogin } = useApollo();
 
   const authenticationRes = await client.mutate({
@@ -73,10 +80,9 @@ export async function loginWithAuthenticator(
   if(!jwt) {
     throw new AuthenticationError("Received empty JWT claim from authentication verification mutation");
   }
-
+  // This applies the jwt to the Apollo client, but the client has a hardcoded endpoint :-(
   return onLogin(jwt);
 }
-
 
 
 const GraphQLUserSchema = z.object({

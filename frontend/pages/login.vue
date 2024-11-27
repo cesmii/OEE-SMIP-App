@@ -7,6 +7,7 @@ definePageMeta({
   title: "Login",
 });
 
+const endpoint = ref<string>();
 const authenticator = ref<string>();
 const role = ref<string>();
 const username = ref<string>();
@@ -31,6 +32,7 @@ async function onSubmit() {
   loading.value = true;
   try {
     await loginWithAuthenticator({
+      endpoint: endpoint.value!,
       authenticator: authenticator.value!,
       role: role.value!,
       username: username.value!,
@@ -54,6 +56,15 @@ async function onSubmit() {
         <v-form v-model="formValid" @submit.prevent="onSubmit">
           <v-card :loading="loading">
             <v-card-text>
+              <v-text-field
+                id="endpoint"
+                v-model="endpoint"
+                label="Endpoint"
+                name="endpoint"
+                placeholder="https://"
+                hint="The URL to the GraphQL endpoint on your SMIP instance"
+                :rules="[required]"
+              />
               <v-text-field
                 id="authenticator"
                 v-model="authenticator"
@@ -86,6 +97,7 @@ async function onSubmit() {
                 label="Password"
                 name="Password"
                 type="password"
+                hint="The authenticator's password"
                 :rules="[required]"
               />
               <v-alert
