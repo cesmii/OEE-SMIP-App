@@ -1,11 +1,11 @@
 <template>
   <v-container>
     <v-row class="ma-0 justify-center">
-      <v-col v-if="pending" class="d-flex flex-column align-center ga-4">
+      <v-col v-if="loading" class="d-flex flex-column align-center ga-4">
         <span>Loading Equipment...</span>
         <v-progress-circular :size="75" color="primary" indeterminate/>
       </v-col>
-      <v-col v-else-if="status === 'error'" class="d-flex flex-column align-center ga-4">
+      <v-col v-else-if="error" class="d-flex flex-column align-center ga-4">
         <v-alert
           title="Error Fetching Equipment"
           type="error"
@@ -59,9 +59,13 @@
 </template>
 
 <script setup lang="ts">
+import { useEquipmentWithOEE } from "~/lib/hooks";
+
+
+
 definePageMeta({
   title: "Dashboard",
 });
 
-const { data: equipments, status, pending } = useAsyncEquipmentWithOEE();
+const { data: equipments, error, loading } = useEquipmentWithOEE();
 </script>
