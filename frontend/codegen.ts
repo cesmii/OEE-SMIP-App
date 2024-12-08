@@ -22,7 +22,7 @@ const config: CodegenConfig = {
           JSON: "string",
           JwtClaim: "string",
           UUID: "string",
-          BitString: "string"
+          BitString: "string",
         },
       },
     },
