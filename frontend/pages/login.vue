@@ -1,5 +1,8 @@
 <script setup lang="ts">
+import { provideApolloClient, useApolloClient } from "@vue/apollo-composable";
+
 import { loginWithAuthenticator } from "~/lib/auth";
+import { useGraphQLStore } from "~/stores/graphql";
 
 
 
@@ -7,7 +10,9 @@ definePageMeta({
   title: "Login",
 });
 
-const endpoint = ref<string>();
+const graphqlStore = useGraphQLStore();
+
+const endpoint = ref<string>(graphqlStore.endpoint);
 const authenticator = ref<string>();
 const role = ref<string>();
 const username = ref<string>();
@@ -23,21 +28,23 @@ function required(value: string): string | boolean {
   return !!value || "This field is required";
 }
 
+const { client } = useApolloClient();
 async function onSubmit() {
   if(!formValid.value) {
     return;
   }
 
+
   errorMsg.value = undefined;
   loading.value = true;
+  graphqlStore.setEndpoint(endpoint.value);
   try {
-    await loginWithAuthenticator({
-      endpoint: endpoint.value!,
+    await provideApolloClient(client)(() => loginWithAuthenticator({
       authenticator: authenticator.value!,
       role: role.value!,
       username: username.value!,
       password: password.value!,
-    });
+    }));
     navigateTo("/");
   } catch(err) {
     console.error(err);

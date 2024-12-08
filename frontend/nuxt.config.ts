@@ -1,7 +1,5 @@
 import vuetify, { transformAssetUrls } from "vite-plugin-vuetify";
 
-import { GRAPHL_TOKEN_KEY } from "./lib/consts";
-
 
 
 const DESCRIPTION = "CESMII's OEE app provides a glanceable view of a KPI used in many manufacturing environments, and works where ever the OEE Profile is implemented";
@@ -36,7 +34,6 @@ export default defineNuxtConfig({
       });
     },
     "@nuxt/eslint",
-    "@nuxtjs/apollo",
     "@vite-pwa/nuxt",
   ],
   pwa: {
@@ -60,31 +57,8 @@ export default defineNuxtConfig({
       ],
     },
   },
-  apollo: {
-    autoImports: true,
-    clients: {
-      default: {
-        httpEndpoint: "https://east.cesmii.net/graphql",
-        authHeader: "Authorization",
-        authType: "Bearer",
-        tokenStorage: "cookie",
-        tokenName: GRAPHL_TOKEN_KEY,
-        cookieAttributes: {
-          sameSite: "strict",
-          httpOnly: false,
-        },
-        inMemoryCacheOptions: {
-          typePolicies: {
-            AttributesGetTimeSeriesRecord: {
-              keyFields: false,
-            },
-          },
-        },
-      },
-      noauth: {
-        httpEndpoint: "https://east.cesmii.net/graphql",
-      },
-    },
+  routeRules: {
+    "/": { ssr: false },
   },
   eslint: {
     config: {

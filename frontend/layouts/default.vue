@@ -45,20 +45,17 @@
 <script setup lang="ts">
 import { useTheme } from "vuetify";
 
-import { useGraphQLUser } from "~/lib/auth";
+import { logoutGraphQL, useGraphQLUser } from "~/lib/auth";
 
 
 
 const route = useRoute();
 const theme = useTheme();
 const user = useGraphQLUser();
-const { onLogout } = useApollo();
 
 
 
 function logout() {
-  onLogout().then(() => {
-    navigateTo("/login");
-  });
+  logoutGraphQL().then(() => navigateTo("/login"));
 }
 </script>

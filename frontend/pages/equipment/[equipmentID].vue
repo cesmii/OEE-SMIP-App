@@ -109,12 +109,14 @@
 </template>
 
 <script setup lang="ts">
+import { useQuery } from "@vue/apollo-composable";
 import { isNonNullish } from "remeda";
 import { useTheme } from "vuetify";
 
 import { GetAttributesTimeSeriesDocument } from "~/generated/graphql/operations";
 import { timezoneOffsetToString } from "~/lib/datetime";
 import { OEEInterfaceNames } from "~/lib/equipment";
+import { useEquipmentDetailWithOEE } from "~/lib/hooks";
 
 
 
@@ -125,7 +127,10 @@ definePageMeta({
 const theme = useTheme();
 const route = useRoute();
 const equipmentId = route.params.equipmentID as string;
-const { data: equipment, pending } = useAsyncEquipmentDetailWithOEE(equipmentId);
+const {
+  data: equipment,
+  query: { loading: pending },
+} = useEquipmentDetailWithOEE(equipmentId);
 
 
 
@@ -194,16 +199,16 @@ const dayEnd = computed(() => {
   return end;
 });
 
-const { data: timeSeriesData, pending: timeSeriesPending } = useAsyncQuery({
-  query: GetAttributesTimeSeriesDocument,
-  variables: {
+const { result: timeSeriesData, loading: timeSeriesPending } = useQuery(
+  GetAttributesTimeSeriesDocument,
+  computed(() => ({
     filter: {
-      id: { in: metricAttributeIds },
+      id: { in: metricAttributeIds.value },
     },
     startTime: dayStart.value.toISOString(),
     endTime: dayEnd.value.toISOString(),
-  },
-});
+  })),
+);
 
 
 const oeeValue = computed(() => equipment.value?.oee.summary?.metric?.value);

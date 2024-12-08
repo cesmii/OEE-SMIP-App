@@ -1,17 +1,14 @@
 import type { VariablesOf } from "@graphql-typed-document-node/core";
+import { useQuery } from "@vue/apollo-composable";
 
+import { useEquipmentIds } from "./useEquipmentIds";
 import { GetEquipmentsDocument } from "~/generated/graphql/operations";
 import { parseEquipmentWithOEE } from "~/lib/equipment";
 
 
 
-export default function useAsyncEquipmentWithOEE() {
-  const {
-    data: equipmentIds,
-    refresh: idRefresh,
-    status: idStatus,
-    pending: idPending,
-  } = useAsyncEquipmentIds();
+export function useEquipmentWithOEE() {
+  const idQuery = useEquipmentIds();
 
   // TODO: Use equipment timezone instead of user timezone.
   const startTime = new Date();
@@ -22,34 +19,28 @@ export default function useAsyncEquipmentWithOEE() {
   // Making this `computed` so the query is reactive to changes in `equipmentIds`.
   const variables = computed<VariablesOf<typeof GetEquipmentsDocument>>(() => ({
     filter: {
-      id: { in: equipmentIds.value ?? [] },
+      id: { in: idQuery.data.value ?? [] },
     },
     startTime: startTime.toISOString(),
     endTime: endTime.toISOString(),
   }));
 
-  const res = useAsyncQuery(
+  const query = useQuery(
     GetEquipmentsDocument,
     variables,
-    "default",
     {
       errorPolicy: "ignore",
-    },
-    {
-      transform: (eqRes) => {
-        return eqRes.equipments?.map(parseEquipmentWithOEE);
-      },
     },
   );
 
   // Compound status involving both queries.
-  const status = computed(() => idStatus.value === "success" ? res.status.value : idStatus.value);
-  const pending = computed(() => idPending.value || res.pending.value);
+  const error = computed(() => idQuery.query.error.value ?? query.error.value);
+  const loading = computed(() => idQuery.query.loading.value || query.loading.value);
 
   return {
-    ...res,
-    status,
-    pending,
-    refresh: () => idRefresh().then(() => res.refresh()),
+    query,
+    error,
+    loading,
+    data: computed(() => query.result.value?.equipments?.map(parseEquipmentWithOEE)),
   };
 }
