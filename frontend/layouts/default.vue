@@ -56,6 +56,8 @@ const user = useGraphQLUser();
 
 
 function logout() {
-  logoutGraphQL().then(() => navigateTo("/login"));
+  logoutGraphQL().then(() => {
+    navigateTo("/login");
+  });
 }
 </script>
