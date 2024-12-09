@@ -1,3 +1,4 @@
+import { useQuery } from "@vue/apollo-composable";
 import { isNonNullish, unique } from "remeda";
 
 import type { GetOeeEquipmentTypesWithEquipmentIdsQuery } from "~/generated/graphql/operations";
@@ -79,15 +80,16 @@ function deriveOeeEquipmentIds(
  * A hook to retrieve all equipment with OEE metrics.
  * Makes a couple GraphQL calls then transforms the returned equipment into a standard shape.
  */
-export default function useAsyncEquipmentIds() {
-  return useAsyncQuery(
+export function useEquipmentIds() {
+  const query = useQuery(
     GetOeeEquipmentTypesWithEquipmentIdsDocument,
     {},
-    "default",
     { errorPolicy: "ignore" },
-    {
-      transform: deriveOeeEquipmentIds,
-    },
   );
+
+  return {
+    query,
+    data: computed(() => query.result.value && deriveOeeEquipmentIds(query.result.value)),
+  };
 }
 
