@@ -1,0 +1,39 @@
+name: Deploy GitHub Pages
+on:
+  push:
+    branches: [ "main" ]
+
+jobs:
+  build:
+    name: Generate Site
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      actions: read
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v1
+        with:
+          bun-version: latest
+
+      - name: Install Dependencies
+        working-directory: frontend
+        run: |
+          bun install --frozen-lockfile
+
+      - name: Code Generation
+        working-directory: frontend
+        run: |
+          bun predev
+
+      - name: Generate Static Site
+        working-directory: frontend
+        run: bun generate
+
+      - name: Upload Artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: ./frontend/.output/public
