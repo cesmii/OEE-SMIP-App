@@ -19,10 +19,10 @@
       >
         <v-card class="text-center">
           <v-card-title>
-            No Equipment Found
+            No OEE Equipment Found
           </v-card-title>
           <v-card-subtitle>
-            Please try refreshing.
+            Please try refreshing, or checking SMIP for OEE equipment.
           </v-card-subtitle>
         </v-card>
       </v-col>
