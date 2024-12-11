@@ -47,10 +47,10 @@
       <v-col v-else cols="12" class="d-flex flex-column align-center ga-4">
         <v-card class="text-center">
           <v-card-title>
-            Unable to Fetch Equipment
+            Waiting to fetch Equipment
           </v-card-title>
           <v-card-subtitle>
-            Please try refreshing.
+            If you don't see anything after a few seconds, try refreshing.
           </v-card-subtitle>
         </v-card>
       </v-col>
@@ -66,6 +66,5 @@ import { useEquipmentWithOEE } from "~/lib/hooks";
 definePageMeta({
   title: "Dashboard",
 });
-
 const { data: equipments, error, loading } = useEquipmentWithOEE();
 </script>
