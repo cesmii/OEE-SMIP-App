@@ -1,12 +1,10 @@
 # OEE SMIP App Frontend
 
-This directory contains the frontend browser code for the OEE SMIP Web Application. This application uses Vue (with Nuxt and Vuetify) for its frontend framework. The application uses [Bun](https://bun.sh/) for dependency management and runtime execution.
+This directory contains the frontend browser code for the OEE SMIP Web Application. This application uses Vue (with Apollo and Vuetify) for its frontend framework. The application uses [Bun](https://bun.sh/) for dependency management and runtime execution.
 
 ## Bun Installation
 
 On Linux, do not use the version of Bun in the snap repository. The official install script will install the correct version: https://bun.sh/docs/installation#macos-and-linux
-
-Look at the [Nuxt 3 documentation](https://nuxt.com/docs/getting-started/introduction) to learn more.
 
 ## App Installation
 
