@@ -41,8 +41,28 @@ interface Props {
 }
 const { equipment } = defineProps<Props>();
 
+// Calculate availability directly based on productive/available time
+const calculatedAvailability = computed(() => {
+  const productiveTime = equipment.oee.availability?.attributes?.find(a => a.relativeName === 'productive_time_today')?.value;
+  const availableTime = equipment.oee.availability?.attributes?.find(a => a.relativeName === 'daily_available_production_time')?.value;
+  
+  // If we have productive time but no available time (or it's zero), return 100%
+  if (productiveTime && (!availableTime || Number(availableTime) === 0)) {
+    return 100;
+  }
+  
+  // If we have both values, calculate the ratio
+  if (productiveTime && availableTime && Number(availableTime) > 0) {
+    const result = (Number(productiveTime) / Number(availableTime)) * 100;
+    return result;
+  }
+  
+  // If all else fails, try to use the metric value
+  return equipment.oee.availability?.metric?.value;
+});
+
 const metrics = computed(() => [
-  makePercentMetric("Availability", equipment.oee.availability?.metric?.value),
+  makePercentMetric("Availability", calculatedAvailability.value),
   makePercentMetric("Performance", equipment.oee.performance?.metric?.value),
   makePercentMetric("Quality", equipment.oee.quality?.metric?.value),
 ]);
