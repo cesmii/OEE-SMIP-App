@@ -60,11 +60,46 @@
 
 <script setup lang="ts">
 import { useEquipmentWithOEE } from "~/lib/hooks";
+import { useGraphQLStore } from "~/stores/graphql";
 
+// Get access to the GraphQL store which contains the API endpoint configuration
+const graphqlStore = useGraphQLStore();
+// Get access to the current route object to modify its metadata
+const route = useRoute();
 
+// Check if the GraphQL store has an endpoint configured
+if (graphqlStore.endpoint) {
+  try {
+    // Parse the endpoint URL to extract the hostname (e.g., "subdomain.company.com")
+    const hostname = new URL(graphqlStore.endpoint).hostname;
+    
+    // Extract the subdomain by splitting on '.' and taking the first part
+    // Then convert to uppercase (e.g., "subdomain.company.com" → "SUBDOMAIN")
+    const subdomain = hostname.split('.')[0].toUpperCase();
+    
+    // Create a dynamic title using the subdomain
+    const title = `${subdomain} Dashboard`;
+    
+    // Update the route's metadata title - this is what v-app-bar-title displays
+    // when using {{route.meta.title}} in the template
+    route.meta.title = title;
+    
+    // Update the browser's document title (what shows in the browser tab)
+    // Note: This creates a title like "SUBDOMAIN Dashboard"
+    useHead({
+      title: `${title} Dashboard`
+    });
+  } catch (error) {
+    // If URL parsing fails (malformed endpoint), log the error
+    console.error("Error parsing URL:", error);
+  }
+} else {
+  // Fallback: If no endpoint is configured, set a default page title
+  // definePageMeta runs at compile-time and sets static metadata
+  definePageMeta({
+    title: "Dashboard", // default fallback title
+  });
+}
 
-definePageMeta({
-  title: "Dashboard",
-});
 const { data: equipments, error, loading } = useEquipmentWithOEE();
 </script>
